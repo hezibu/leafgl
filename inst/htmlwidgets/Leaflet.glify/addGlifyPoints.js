@@ -23,7 +23,7 @@ LeafletWidget.methods.addGlifyPoints = function(data, cols, popup, label, opacit
       var idx = data.findIndex(k => k==point);
       //set up a standalone popup (use a popup as a layer)
       if (map.hasLayer(pointslayer.layer)) {
-        var content = popup ? popup[idx].toString() : null;
+        var content = popup ? popup[idx] : null;
         if (HTMLWidgets.shinyMode) {
               Shiny.setInputValue(map.id + "_glify_click", {
                 id: layerId ? layerId[idx] : idx+1,
@@ -42,20 +42,25 @@ LeafletWidget.methods.addGlifyPoints = function(data, cols, popup, label, opacit
       }
     };
 
-  let tooltip = new L.Tooltip();
+  //let tooltip = new L.popup();
+
+  let labelPopup = null;
 
   var hover_event = function(e, point, addlabel, label) {
+     map.getContainer().style.cursor = 'pointer';
     var idx = data.findIndex(k => k==point);
       //set up a standalone label (use a label as a layer)
       if (map.hasLayer(pointslayer.layer)) {
-        var content = label ? label[idx].toString() : null;
-        if (label !== null) {
-          tooltip
+        var content = label ? label[idx] : null;
+        if (popup !== null) {
+         labelPopup = L.popup()
             .setLatLng(point)
             .setContent(content)
-            .addTo(map);
+            .openOn(map);
         }
       }
+       map.getContainer().style.cursor = '';
+       labelPopup = null;
   }
 
   var hvr = function(e, feature) {
